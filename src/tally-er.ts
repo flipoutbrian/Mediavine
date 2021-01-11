@@ -15,7 +15,7 @@ if (process.argv.length > 2) {
         promises.push(readFileP(process.argv[offset], 'utf8'));
     }
     Promise.all(promises)
-        .then((allData):void => {
+        .then((allData): void => {
             allData.forEach((data) => {
                 const mt:MatchTally = new MatchTally();
                 const input:string[] = String(data).split('\n');

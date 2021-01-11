@@ -1,49 +1,41 @@
-class MatchTally {
-    regex: RegExp;
-    matches: Array<{ name: string, score: number }[]>;
-    teams: Map<string, { team: string, tally: number, matches: number[] }>;
-
-    constructor() {
+"use strict";
+exports.__esModule = true;
+exports.MatchTally = void 0;
+var MatchTally = /** @class */ (function () {
+    function MatchTally() {
         // Limit the characters that can be considered valid
         this.regex = new RegExp(/^\s*([\'\*@$A-Za-z0-9 _-]+)\s+(\d+)\s*$/);
-        this.matches = [];  // store the matches for later reference
+        this.matches = []; // store the matches for later reference
         this.teams = new Map();
     }
-
-    clear(): void {
-        this.matches = [];  // store the matches for later reference
+    MatchTally.prototype.clear = function () {
+        this.matches = []; // store the matches for later reference
         this.teams = new Map();
-    }
-
-    subparse(part: string): { name: string, score: number } {
+    };
+    MatchTally.prototype.subparse = function (part) {
         if (typeof part !== 'string') {
             throw new Error('Invalid input format, expecting a string');
         }
-
-        let fields: string[] = this.regex.exec(part);
+        var fields = this.regex.exec(part);
         if (!fields) {
             throw new Error('Invalid input format, expecting <string> <number>');
         }
-
-        const score: number = parseInt(fields[2], 10);
+        var score = parseInt(fields[2], 10);
         if (score < 0) {
             throw new Error('Invalid input format, scores can not be negative');
         }
-
         return { name: fields[1].trim(), score: score };
-    }
-
-    parseInput(input: string): void {
+    };
+    MatchTally.prototype.parseInput = function (input) {
         if (typeof input !== 'string') {
             throw new Error('Invalid input format, expecting a string');
         }
-        const plays: string[] = input.split(',');
+        var plays = input.split(',');
         if (plays.length <= 1) {
             throw new Error('Invalid input format, expecting a comma separator');
         }
-
-        const team1: { name: string, score: number } = this.subparse(plays[0]);
-        const team2: { name: string, score: number } = this.subparse(plays[1]);
+        var team1 = this.subparse(plays[0]);
+        var team2 = this.subparse(plays[1]);
         if (team1.name == team2.name) {
             throw new Error('Invalid input format, team can not play itself');
         }
@@ -54,11 +46,9 @@ class MatchTally {
         if (!this.teams.has(team2.name)) {
             this.teams.set(team2.name, { team: team2.name, tally: 0, matches: [] });
         }
-
-
         this.teams.get(team1.name).matches.push(this.matches.length);
         this.teams.get(team2.name).matches.push(this.matches.length);
-        const diff: number = team1.score - team2.score;
+        var diff = team1.score - team2.score;
         if (diff == 0) {
             this.teams.get(team1.name).tally += 1;
             this.teams.get(team2.name).tally += 1;
@@ -71,34 +61,41 @@ class MatchTally {
                 this.teams.get(team2.name).tally += 3;
             }
         }
-
         this.matches.push([team1, team2]);
-    }
-
-    results(): string[] {
+    };
+    MatchTally.prototype.results = function () {
         // results are to be sorted, primary sort is by tally score, secondary
         // sort is alphabetically
-        const values: { team: string, tally: number, matches: number[] }[] = Array.from(this.teams.values());
-        values.sort((a, b): number => {
-            if (a.tally < b.tally) { return 1; }
-            else if (a.tally > b.tally) { return -1; }
-            else {  // tally results are equal, sort by name
-                if (a.team > b.team) { return 1; }
-                if (a.team < b.team) { return -1; }
-                else throw new Error('Team can not play itself');
+        var values = Array.from(this.teams.values());
+        values.sort(function (a, b) {
+            if (a.tally < b.tally) {
+                return 1;
+            }
+            else if (a.tally > b.tally) {
+                return -1;
+            }
+            else { // tally results are equal, sort by name
+                if (a.team > b.team) {
+                    return 1;
+                }
+                if (a.team < b.team) {
+                    return -1;
+                }
+                else
+                    throw new Error('Team can not play itself');
             }
         });
-        let ranking: number = 1;
-        const response: string[] = [];
-        values.forEach((obj, idx, container) => {
-            response.push(`${ranking}. ${obj.team} ${obj.tally}`);
+        var ranking = 1;
+        var response = [];
+        values.forEach(function (obj, idx, container) {
+            response.push(ranking + ". " + obj.team + " " + obj.tally);
             if (idx < container.length - 1 &&
                 obj.tally != container[idx + 1].tally) {
                 ranking = idx + 2;
             }
         });
         return response;
-    }
-}
-
-export { MatchTally }
+    };
+    return MatchTally;
+}());
+exports.MatchTally = MatchTally;
